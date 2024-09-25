@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE DerivingVia #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE FunctionalDependencies #-}
@@ -83,8 +84,10 @@ module Control.Monad.Accum
   ( -- * Type class
     MonadAccum (..),
 
+#if !defined(__MHS__)
     -- * Lifting helper type
     LiftingAccum (..),
+#endif
 
     -- * Other functions
     looks,
@@ -165,6 +168,7 @@ instance (Monoid w) => MonadAccum w (AccumT w Identity) where
   add = Accum.add
   accum = Accum.accum
 
+#if !defined(__MHS__)
 -- | The accumulated value \'survives\' an error: even if the
 -- computation fails to deliver a result, we still have an accumulated value.
 --
@@ -301,6 +305,7 @@ instance (MonadTrans t, Monad (t m), MonadAccum w m) => MonadAccum w (LiftingAcc
   look = LiftingAccum . lift $ look
   add x = LiftingAccum . lift $ add x
   accum f = LiftingAccum . lift $ accum f
+#endif
 
 -- | Retrieve a function of the accumulated value.
 --
